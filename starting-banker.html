@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starting Banker - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">The Starting Banker</h1>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="instruction-container">
+                    <p class="step-description">
+                        The player who drew the East tile when assigning seats throws the two dice into the center of the walls.
+                    </p>
+                    
+                    <!-- Space for custom image -->
+                    <img src="starting-banker.jpg" alt="Wind tiles stacking" class="instruction-image">
+                    
+                    <div class="instruction-step">
+                        <p class="step-description">
+                            Starting with East and going counter-clockwise, count around the table up to the combined dice number. 
+                            The player who the count lands on will be the first EAST SEAT and STARTING BANKER. In the first hand of the game, 
+                            they will be known as Double East (i.e. East round, East seat).
+                        </p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3 class="example-title">Example:</h3>
+                        <p class="example-description">
+                            If the dice shows 4 and 3 (total: 7), starting from East, count 7 positions counter-clockwise:
+                        </p>
+                        <ol class="example-list">
+                            <li>East (starting point)</li>
+                            <li>South (1)</li>
+                            <li>West (2)</li>
+                            <li>North (3)</li>
+                            <li>East (4)</li>
+                            <li>South (5)</li>
+                            <li>West (6)</li>
+                            <li>North (7) - becomes the Starting Banker</li>
+                        </ol>
+                        <p class="example-description">
+                            In this example, the North player would become the first East Seat and Starting Banker.
+                        </p>
+                    </div>
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary">NEXT STEP</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple navigation to the next screen
+        document.getElementById('nextButton').addEventListener('click', function() {
+            window.location.href = 'wind-assignment.html';
+        });
+        
+        // Ensure game state exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('mahjongGameState')) {
+                // If no game state exists, return to player setup
+                window.location.href = 'player-setup.html';
+            }
+        });
+    </script>
+</body>
+</html>

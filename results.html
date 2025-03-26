@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Results</h1>
+            <p id="roundHeader" class="app-subtitle">East Round - Hand 1</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <!-- Winner Section -->
+                <h2 class="section-title">Winner</h2>
+                <div id="winnerCard" class="winner-card">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Points During Round -->
+                <h2 class="section-title">Round Points</h2>
+                <div id="roundPoints" class="round-points">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Payouts -->
+                <h2 class="section-title">Payouts</h2>
+                <div id="payouts" class="payouts-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Current Standings -->
+                <h2 class="section-title">Current Standings</h2>
+                <div class="standings-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsTable">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Round History -->
+                <h2 class="section-title">Round History</h2>
+                <div id="roundHistory" class="history-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Direct Points Recap -->
+                <h2 class="section-title">Direct Points Recap</h2>
+                <div id="pointsRecap" class="points-recap">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="button-group">
+                    <button id="nextHandButton" class="btn btn-primary">NEXT HAND</button>
+                    <button id="endGameButton" class="btn btn-secondary">END GAME</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p id="handStatus">Hand 1 of East Round complete</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load game state
+        const gameStateJson = localStorage.getItem('mahjongGameState');
+        
+        // Check if game state exists
+        if (!gameStateJson) {
+            window.location.href = 'player-setup.html';
+        }
+        
+        const gameState = JSON.parse(gameStateJson);
+        const players = gameState.players;
+        const currentRound = gameState.currentRound;
+        const payouts = gameState.payouts || [];
+        const history = gameState.history || [];
+        const gameScore = gameState.gameScore || [];
+        
+        // Update round header
+        const roundHeader = document.getElementById('roundHeader');
+        roundHeader.textContent = `${currentRound.name} Round - Hand ${currentRound.handNumber}`;
+        
+        // Update hand status
+        const handStatus = document.getElementById('handStatus');
+        handStatus.textContent = `Hand ${currentRound.handNumber} of ${currentRound.name} Round complete`;
+        
+        // Find the winner
+        const winner = players.find(player => player.isWinner);
+        
+        // Display winner
+        const winnerCard = document.getElementById('winnerCard');
+        if (winner) {
+            winnerCard.innerHTML = `
+                <div class="winner-avatar">${winner.name.charAt(0)}</div>
+                <div class="winner-info">
+                    <div class="winner-name">${winner.name}</div>
+                    <div class="winner-position">
+                        ${winner.wind} Wind
+                        ${winner.isBanker ? '<span class="banker-badge">Banker</span>' : ''}
+                    </div>
+                </div>
+                <div class="winner-score">${winner.score}</div>
+            `;
+        }
+        
+        // Display round points
+        const roundPoints = document.getElementById('roundPoints');
+        players.forEach(player => {
+            const row = document.createElement('div');
+            row.className = 'player-score-row';
+            
+            // Add banker-row class if player is banker
+            if (player.isBanker) {
+                row.classList.add('banker-row');
+            }
+            
+            // Add winner-row class if player is winner
+            if (player.isWinner) {
+                row.classList.add('winner-row');
+            }
+            
+            row.innerHTML = `
+                <div class="player-info">
+                    <div class="player-avatar ${player.isWinner ? 'winner-avatar' : ''}">${player.name.charAt(0)}</div>
+                    <div class="player-details">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-position">${player.wind} Wind</div>
+                    </div>
+                </div>
+                <div class="player-round-score">${player.score}</div>
+            `;
+            
+            roundPoints.appendChild(row);
+        });
+        
+        // Display payouts
+        const payoutsContainer = document.getElementById('payouts');
+        payouts.forEach(payout => {
+            const row = document.createElement('div');
+            row.className = 'payout-row';
+            
+            row.innerHTML = `
+                <div class="payout-from">${payout.from}</div>
+                <div class="payout-arrow">→</div>
+                <div class="payout-to">${payout.to}</div>
+                <div class="payout-amount">${payout.amount}</div>
+            `;
+            
+            payoutsContainer.appendChild(row);
+        });
+        
+        // Display current standings
+        const standingsTable = document.getElementById('standingsTable');
+        
+        // Sort by score descending
+        const sortedScores = [...gameScore].sort((a, b) => b.score - a.score);
+        
+        sortedScores.forEach((score, index) => {
+            const row = document.createElement('tr');
+            
+            // Highlight first place
+            if (index === 0) {
+                row.classList.add('first-place');
+            }
+            
+            const scoreDisplay = score.score >= 0 ? `+${score.score}` : score.score;
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar small">${score.name.charAt(0)}</div>
+                        <span>${score.name}</span>
+                    </div>
+                </td>
+                <td class="player-total-score ${score.score >= 0 ? 'positive' : 'negative'}">${scoreDisplay}</td>
+            `;
+            
+            standingsTable.appendChild(row);
+        });
+        
+        // Display round history
+        const roundHistory = document.getElementById('roundHistory');
+        
+        history.forEach(entry => {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            
+            item.innerHTML = `
+                <div class="history-header">
+                    <span>${entry.round} Round - Hand ${entry.hand}</span>
+                    <span>${entry.score} pts</span>
+                </div>
+                <div class="history-content">
+                    <strong>${entry.winner}</strong> wins ${entry.summary}
+                </div>
+            `;
+            
+            roundHistory.appendChild(item);
+        });
+        
+        // Display points recap
+        const pointsRecap = document.getElementById('pointsRecap');
+        
+        players.forEach(player => {
+            const row = document.createElement('div');
+            row.className = 'recap-row';
+            
+            row.innerHTML = `
+                <span>${player.name}</span>
+                <span>${player.score} (${player.scoreDetails?.totalBeforeRounding || player.score})</span>
+            `;
+            
+            pointsRecap.appendChild(row);
+        });
+        
+        // Handle next hand button
+        document.getElementById('nextHandButton').addEventListener('click', function() {
+            // Update game state for next hand
+            const bankerWon = winner.isBanker;
+            
+            // Reset player scores for next hand
+            players.forEach(player => {
+                player.score = 0;
+                player.scoreDetails = null;
+                player.isWinner = false;
+                player.isDiscarder = false;
+            });
+            
+            // Update banker based on results
+            if (!bankerWon) {
+                // Rotate banker
+                const nextBankerName = gameState.nextBanker;
+                players.forEach(player => {
+                    player.isBanker = (player.name === nextBankerName);
+                });
+                
+                // Check if we need to change rounds
+                // If we've completed a full round (all players have been banker)
+                const eastWindPlayer = players.find(p => p.wind === 'East');
+                const firstPlayer = players[0];
+                
+                if (eastWindPlayer.name === firstPlayer.name && currentRound.handNumber > 4) {
+                    // Move to next round
+                    const rounds = ['East', 'South', 'West', 'North'];
+                    const chineseWinds = ['東', '南', '西', '北'];
+                    const currentRoundIndex = rounds.indexOf(currentRound.name);
+                    
+                    if (currentRoundIndex < rounds.length - 1) {
+                        currentRound.name = rounds[currentRoundIndex + 1];
+                        currentRound.chinese = chineseWinds[currentRoundIndex + 1];
+                        currentRound.number++;
+                        currentRound.handNumber = 1;
+                    } else {
+                        // Game complete, all rounds done
+                        alert('All rounds complete! Game Over.');
+                        // Redirect to game recap or welcome screen
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                } else {
+                    // Just increment hand number
+                    currentRound.handNumber++;
+                }
+                
+                // Rotate winds for all players if moving to next hand
+                rotateWinds();
+            } else {
+                // Banker stays the same, just increment hand number
+                currentRound.handNumber++;
+            }
+            
+            // Reset current player index
+            gameState.currentPlayerIndex = 0;
+            
+            // Update game state
+            gameState.currentRound = currentRound;
+            gameState.players = players;
+            gameState.winInfo = null;
+            gameState.payouts = [];
+            
+            localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+            
+            // Navigate to next hand
+            window.location.href = 'seat-wind-assignment.html';
+        });
+        
+        // Rotate wind positions
+        function rotateWinds() {
+            const winds = ['East', 'South', 'West', 'North'];
+            
+            // Get current wind assignments
+            const windAssignments = {};
+            players.forEach(player => {
+                windAssignments[player.name] = player.wind;
+            });
+            
+            // Rotate winds (each player gets the next wind)
+            players.forEach(player => {
+                const currentWindIndex = winds.indexOf(player.wind);
+                const nextWindIndex = (currentWindIndex + 1) % winds.length;
+                player.wind = winds[nextWindIndex];
+                player.isBanker = player.wind === 'East';
+            });
+        }
+        
+        // Handle end game button
+        document.getElementById('endGameButton').addEventListener('click', function() {
+            // Display final game results
+            alert('Game ended! Final standings:\n' + 
+                  sortedScores.map((score, index) => 
+                      `${index + 1}. ${score.name}: ${score.score}`
+                  ).join('\n'));
+            
+            // Clear game state and return to welcome screen
+            localStorage.removeItem('mahjongGameState');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

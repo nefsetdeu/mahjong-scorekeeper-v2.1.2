@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Setup - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">麻将 SCOREKEEPER</h1>
+            <p class="app-subtitle">Enter four player names</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <!-- Player 1 -->
+                <div class="player-row">
+                    <div class="player-info2">
+                        <div class="player-label">
+                            <div class="player-icon">
+                <span class="material-icons">person</span>
+                			</div>
+                            <label for="player1">Player 1</label>
+                        </div>
+                        <input type="text" id="player1" class="input-field" placeholder="Enter name">
+                    </div>
+                </div>
+                
+                <!-- Player 2 -->
+                <div class="player-row">
+                    <div class="player-info2">
+                        <div class="player-label">
+                            <div class="player-icon">
+                <span class="material-icons">person</span>
+                			</div>
+                            <label for="player2">Player 2</label>
+                        </div>
+                        <input type="text" id="player2" class="input-field" placeholder="Enter name">
+                    </div>
+                </div>
+                
+                <!-- Player 3 -->
+                <div class="player-row">
+                    <div class="player-info2">
+                        <div class="player-label">
+                            <div class="player-icon">
+                <span class="material-icons">person</span>
+                			</div>
+                            <label for="player3">Player 3</label>
+                        </div>
+                        <input type="text" id="player3" class="input-field" placeholder="Enter name">
+                    </div>
+                </div>
+                
+                <!-- Player 4 -->
+                <div class="player-row">
+                    <div class="player-info2">
+                        <div class="player-label">
+                            <div class="player-icon">
+                <span class="material-icons">person</span>
+                			</div>
+                            <label for="player4">Player 4</label>
+                        </div>
+                        <input type="text" id="player4" class="input-field" placeholder="Enter name">
+                    </div>
+                </div>
+                
+                <div id="errorMessage" class="error-message" style="display: none;">
+                    Please enter all four player names.
+                </div>
+                
+                <button id="continueButton" class="btn btn-primary" disabled>CONTINUE</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Get references to DOM elements
+        const playerInputs = [
+            document.getElementById('player1'),
+            document.getElementById('player2'),
+            document.getElementById('player3'),
+            document.getElementById('player4')
+        ];
+        
+        const continueButton = document.getElementById('continueButton');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Validate inputs and enable/disable continue button
+        function validateForm() {
+            const allNamesEntered = playerInputs.every(input => input.value.trim() !== '');
+            
+            continueButton.disabled = !allNamesEntered;
+            errorMessage.style.display = allNamesEntered ? 'none' : 'block';
+            
+            if (!allNamesEntered) {
+                continueButton.classList.remove('btn-primary');
+                continueButton.classList.add('btn-secondary');
+            } else {
+                continueButton.classList.add('btn-primary');
+                continueButton.classList.remove('btn-secondary');
+            }
+        }
+        
+        // Listen for input changes
+        playerInputs.forEach(input => {
+            input.addEventListener('input', validateForm);
+        });
+        
+        // Handle form submission
+        continueButton.addEventListener('click', function() {
+            if (continueButton.disabled) return;
+            
+            // Create initial game state with player names
+            const players = playerInputs.map((input, index) => ({
+                id: index + 1,
+                name: input.value.trim(),
+                wind: null,
+                isBanker: false,
+                score: 0
+            }));
+            
+            // Initialize game state
+            const gameState = {
+                players: players,
+                currentRound: {
+                    name: 'East',
+                    chinese: '東',
+                    number: 1,
+                    handNumber: 1
+                },
+                history: [],
+                gameScore: players.map(player => ({
+                    name: player.name,
+                    score: 0
+                }))
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+            
+            // Navigate to next screen
+            window.location.href = 'assigning-seats.html';
+        });
+        
+        // Initial validation
+        validateForm();
+    </script>
+</body>
+</html>

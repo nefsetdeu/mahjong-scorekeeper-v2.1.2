@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+    <div class="logo-container">
+        <img src="logo.png" alt="Mahjong Scorekeeper" class="logo">
+    </div>
+    <p class="app-subtitle">Track your games</p>
+</header>
+        
+        <!-- Added image before the card -->
+        <div class="welcome-image-container">
+            <img src="mahjong.jpg" alt="Mahjong Game" class="welcome-image">
+        </div>
+        
+        <main class="main-content">
+            <div class="card">
+                <!-- Wind tiles -->
+                <div class="tiles-container">
+                    <div class="wind-tile">東</div>
+                    <div class="wind-tile">南</div>
+                    <div class="wind-tile">西</div>
+                    <div class="wind-tile">北</div>
+                </div>
+                
+                <!-- Features list -->
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span class="feature-text">Track scores for all players</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span class="feature-text">Calculate complex Mahjong scoring</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span class="feature-text">Follow traditional game rules</span>
+                    </div>
+                </div>
+                
+                <!-- Start button -->
+                <button id="startGameButton" class="btn btn-primary">START NEW GAME</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple navigation to the next screen
+        document.getElementById('startGameButton').addEventListener('click', function() {
+            // Clear any previous game data
+            localStorage.removeItem('mahjongGameState');
+            
+            // Navigate to player setup screen
+            window.location.href = 'player-setup.html';
+        });
+    </script>
+</body>
+</html>

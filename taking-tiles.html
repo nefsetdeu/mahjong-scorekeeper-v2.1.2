@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taking Tiles - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Taking Tiles</h1>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="instruction-container">
+                    <p class="step-description">
+                        After opening the gate, players take turns drawing tiles to form their starting hands.
+                    </p>
+                    
+                    <div class="instruction-step">
+                        <h3 class="sub-title">Drawing Process:</h3>
+                        <ol class="numbered-list">
+                            <li>
+                                Once the starting point has been identified, the Banker starts the deal by taking four tiles
+                                (two stacks of two) immediately beyond the break point.
+                            </li>
+                            <li>
+                                Each of the other players then takes four tiles in turn (South, West, North).
+                            </li>
+                            <li>
+                                This continues for a second round of four tiles each, and then a third round of four tiles each.
+                            </li>
+                            <li>
+                                Finally, East takes two more tiles, and the other players take one more tile each.
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <!-- Space for custom image -->
+                    <img src="jump.jpg" alt="Wind tiles stacking" class="instruction-image">
+                    
+                    <div class="example-box">
+                        <h3 class="example-title">Important Note:</h3>
+                        <p class="example-description">
+                            The walls are dismantled in a <strong>clockwise</strong> direction, while players take turns 
+                            going <strong>counter-clockwise</strong> (East → South → West → North).
+                        </p>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <h3 class="sub-title">Final Hand Structure:</h3>
+                        <p class="step-description">
+                            After drawing, each player should have 13 tiles, except for East who has 14 tiles and will 
+                            discard one to begin the game.
+                        </p>
+                    </div>
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary">NEXT STEP</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple navigation to the next screen
+        document.getElementById('nextButton').addEventListener('click', function() {
+            window.location.href = 'seat-wind-assignment.html';
+        });
+        
+        // Ensure game state exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('mahjongGameState')) {
+                // If no game state exists, return to player setup
+                window.location.href = 'player-setup.html';
+            }
+        });
+    </script>
+</body>
+</html>

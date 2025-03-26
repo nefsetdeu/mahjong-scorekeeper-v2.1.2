@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Winds - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Assign Winds to Players</h1>
+            <p class="app-subtitle">Based on the dice roll, assign winds to each player</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div id="playerWindAssignments">
+                    <!-- This will be filled dynamically with JavaScript -->
+                </div>
+                
+                <div class="info-note">
+                    <p><strong>Remember:</strong> The East player is the Banker. Make sure to select the Banker based on the dice roll.</p>
+                </div>
+                
+                <div id="errorMessage" class="error-message" style="display: none;">
+                    Please assign a wind to each player and select one player as the Banker.
+                </div>
+                
+                <button id="confirmButton" class="btn btn-primary">CONFIRM WIND ASSIGNMENTS</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load game state
+        const gameStateJson = localStorage.getItem('mahjongGameState');
+        
+        // Check if game state exists
+        if (!gameStateJson) {
+            window.location.href = 'player-setup.html';
+        }
+        
+        const gameState = JSON.parse(gameStateJson);
+        const players = gameState.players;
+        
+        // Reference to the container and buttons
+        const playerWindAssignments = document.getElementById('playerWindAssignments');
+        const confirmButton = document.getElementById('confirmButton');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Render player inputs
+        players.forEach((player, index) => {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player-wind-row';
+            playerDiv.innerHTML = `
+                <div class="player-info">
+                    <div class="player-label">
+                        <div class="player-icon">${index + 1}</div>
+                        <span>${player.name}</span>
+                    </div>
+                </div>
+                <div class="wind-banker-controls">
+                    <div class="banker-selector">
+                        <input type="radio" name="banker" id="banker-${index}" class="banker-radio" data-player-id="${index}">
+                        <label for="banker-${index}" class="banker-label">Banker</label>
+                    </div>
+                    <select id="wind-${index}" class="select-field wind-select" data-player-id="${index}">
+                        <option value="">Select wind</option>
+                        <option value="East">East (東)</option>
+                        <option value="South">South (南)</option>
+                        <option value="West">West (西)</option>
+                        <option value="North">North (北)</option>
+                    </select>
+                </div>
+            `;
+            playerWindAssignments.appendChild(playerDiv);
+        });
+        
+        // Get all wind selects and banker radios
+        const windSelects = document.querySelectorAll('.wind-select');
+        const bankerRadios = document.querySelectorAll('.banker-radio');
+        
+        // Update available winds when a wind is selected
+        windSelects.forEach(select => {
+            select.addEventListener('change', updateWindOptions);
+        });
+        
+        // When banker is selected, set the wind to East
+        bankerRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    const playerId = this.dataset.playerId;
+                    const windSelect = document.getElementById(`wind-${playerId}`);
+                    windSelect.value = 'East';
+                    updateWindOptions();
+                }
+            });
+        });
+        
+        function updateWindOptions() {
+            const selectedWinds = Array.from(windSelects)
+                .map(select => select.value)
+                .filter(val => val !== '');
+                
+            // Enable all options first
+            windSelects.forEach(select => {
+                Array.from(select.options).forEach(option => {
+                    if (option.value !== '') {
+                        option.disabled = false;
+                    }
+                });
+            });
+            
+            // Then disable selected options on other selects
+            windSelects.forEach(select => {
+                const currentValue = select.value;
+                if (currentValue === '') {
+                    Array.from(select.options).forEach(option => {
+                        if (option.value !== '' && selectedWinds.includes(option.value)) {
+                            option.disabled = true;
+                        }
+                    });
+                }
+            });
+            
+            // If East is selected, make that player the banker
+            windSelects.forEach((select, index) => {
+                if (select.value === 'East') {
+                    bankerRadios[index].checked = true;
+                }
+            });
+            
+            validateForm();
+        }
+        
+        function validateForm() {
+            const allWindsSelected = Array.from(windSelects).every(select => select.value !== '');
+            const bankerSelected = Array.from(bankerRadios).some(radio => radio.checked);
+            const eastSelected = Array.from(windSelects).some(select => select.value === 'East');
+            
+            const isValid = allWindsSelected && bankerSelected && eastSelected;
+            
+            confirmButton.disabled = !isValid;
+            errorMessage.style.display = isValid ? 'none' : 'block';
+            
+            if (!isValid) {
+                confirmButton.classList.remove('btn-primary');
+                confirmButton.classList.add('btn-secondary');
+            } else {
+                confirmButton.classList.add('btn-primary');
+                confirmButton.classList.remove('btn-secondary');
+            }
+        }
+        
+        // Handle form submission
+        confirmButton.addEventListener('click', function() {
+            if (confirmButton.disabled) return;
+            
+            // Update player winds and banker status
+            players.forEach((player, index) => {
+                const windSelect = document.getElementById(`wind-${index}`);
+                const bankerRadio = document.getElementById(`banker-${index}`);
+                
+                player.wind = windSelect.value;
+                player.isBanker = bankerRadio.checked;
+            });
+            
+            // Update game state
+            gameState.players = players;
+            localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+            
+            // Navigate to next screen
+            window.location.href = 'opening-gate.html';
+        });
+        
+        // Initial validation
+        validateForm();
+    </script>
+</body>
+</html>

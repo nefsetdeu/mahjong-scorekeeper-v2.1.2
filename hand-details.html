@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Details - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 id="playerHeader" class="app-title">Player Name - Wind Hand Details</h1>
+            <p id="playerStatus" class="app-subtitle">Winning Player</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <!-- Progress indicator -->
+                <div class="progress-indicator">
+                    <div id="dot1" class="progress-dot active"></div>
+                    <div id="dot2" class="progress-dot"></div>
+                    <div id="dot3" class="progress-dot"></div>
+                    <div id="dot4" class="progress-dot"></div>
+                </div>
+                
+                <!-- Base Score Section -->
+                <h2 class="section-title">1. Base Score</h2>
+                
+                <div id="winnerBonus" class="info-note" style="display: none;">
+                    <p>Winner's bonus: +30 points</p>
+                </div>
+                
+                <h3 class="subsection-title">Tile Sets</h3>
+
+<div class="accordion">
+    <div class="accordion-header" id="tileSetsHeader">
+        <h4 class="accordion-title">Good hands? 🀋 (Click to expand)</h4>
+        <span class="accordion-icon">▼</span>
+    </div>
+    
+    <div class="accordion-content" id="tileSetsContent">
+        <!-- Pungs (2-8) -->
+        <h4 class="category-title">Pungs (2-8)</h4>
+        <div class="counter">
+            <span class="counter-label">Open Pungs 2-8 (+2 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('openPungs28')">-</button>
+                <span id="openPungs28Value" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('openPungs28')">+</button>
+            </div>
+        </div>
+        
+        <div class="counter">
+            <span class="counter-label">Closed Pungs 2-8 (+4 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('closedPungs28')">-</button>
+                <span id="closedPungs28Value" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('closedPungs28')">+</button>
+            </div>
+        </div>
+        
+        <!-- Pungs (1/9/Wind/Dragon) -->
+        <h4 class="category-title">Pungs (1/9/Wind/Dragon)</h4>
+        <div class="counter">
+            <span class="counter-label">Open Pungs 1/9/Wind/Dragon (+4 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('openPungs19WindDragon')">-</button>
+                <span id="openPungs19WindDragonValue" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('openPungs19WindDragon')">+</button>
+            </div>
+        </div>
+        
+        <div class="counter">
+            <span class="counter-label">Closed Pungs 1/9/Wind/Dragon (+8 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('closedPungs19WindDragon')">-</button>
+                <span id="closedPungs19WindDragonValue" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('closedPungs19WindDragon')">+</button>
+            </div>
+        </div>
+        
+        <!-- Kongs (2-8) -->
+        <h4 class="category-title">Kongs (2-8)</h4>
+        <div class="counter">
+            <span class="counter-label">Open Kongs 2-8 (+8 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('openKongs28')">-</button>
+                <span id="openKongs28Value" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('openKongs28')">+</button>
+            </div>
+        </div>
+        
+        <div class="counter">
+            <span class="counter-label">Closed Kongs 2-8 (+16 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('closedKongs28')">-</button>
+                <span id="closedKongs28Value" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('closedKongs28')">+</button>
+            </div>
+        </div>
+        
+        <!-- Kongs (1/9/Wind/Dragon) -->
+        <h4 class="category-title">Kongs (1/9/Wind/Dragon)</h4>
+        <div class="counter">
+            <span class="counter-label">Open Kongs 1/9/Wind/Dragon (+16 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('openKongs19WindDragon')">-</button>
+                <span id="openKongs19WindDragonValue" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('openKongs19WindDragon')">+</button>
+            </div>
+        </div>
+        
+        <div class="counter">
+            <span class="counter-label">Closed Kongs 1/9/Wind/Dragon (+32 pts each)</span>
+            <div class="counter-controls">
+                <button class="counter-btn" onclick="decrementCounter('closedKongs19WindDragon')">-</button>
+                <span id="closedKongs19WindDragonValue" class="counter-value">0</span>
+                <button class="counter-btn" onclick="incrementCounter('closedKongs19WindDragon')">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+                
+                <!-- Additional Base Score Items -->
+                <h3 class="subsection-title">Additional Points</h3>
+                
+                <div id="pairDragonsWindCheckbox" class="checkbox-item">
+                    <div id="pairDragonsWindBox" class="checkbox"></div>
+                    <span>Pair of dragons or your/prevailing wind (+2 pts)</span>
+                </div>
+                
+                <!-- Winner-only checkboxes -->
+                <div id="winnerCheckboxes" class="mutually-exclusive" style="display: none;">
+                    <div id="pickedEyeCheckbox" class="checkbox-item">
+                        <div id="pickedEyeBox" class="checkbox"></div>
+                        <span>Picked up an eye as the last tile (+2 pts)</span>
+                    </div>
+                    
+                    <div id="pickedViableTileCheckbox" class="checkbox-item">
+                        <div id="pickedViableTileBox" class="checkbox"></div>
+                        <span>Picked up the only viable call in a run (+2 pts)</span>
+                    </div>
+                    
+                    <div id="drewWinningTileCheckbox" class="checkbox-item">
+                        <div id="drewWinningTileBox" class="checkbox"></div>
+                        <span>Drew the winning tile from the wall (+2 pts)</span>
+                    </div>
+                </div>
+                
+                <!-- Doubles Section (Winner only) -->
+                <div id="doublesSection" style="display: none;">
+                    <h2 class="section-title">2. Doubles (Fans)</h2>
+                    
+                    <div id="dragonWindSetCheckbox" class="checkbox-item">
+                        <div id="dragonWindSetBox" class="checkbox"></div>
+                        <span>Dragon tiles OR relevant wind position tiles (x2)</span>
+                    </div>
+                    
+                    <div id="allSetsCheckbox" class="checkbox-item">
+                        <div id="allSetsBox" class="checkbox"></div>
+                        <span>All sets – Hand with only triplets/kongs (x2)</span>
+                    </div>
+                    
+                    <div id="allRunsCheckbox" class="checkbox-item">
+                        <div id="allRunsBox" class="checkbox"></div>
+                        <span>All runs – Hand with only sequences (x2)</span>
+                    </div>
+                    
+                    <div id="oneSuitHonorsCheckbox" class="checkbox-item">
+                        <div id="oneSuitHonorsBox" class="checkbox"></div>
+                        <span>Hand of one suit plus honors (x2)</span>
+                    </div>
+                    
+                    <div id="concealedHandCheckbox" class="checkbox-item">
+                        <div id="concealedHandBox" class="checkbox"></div>
+                        <span>Win with a completely concealed hand (x2)</span>
+                    </div>
+                    
+                    <div id="drawWinningTileDoubleCheckbox" class="checkbox-item">
+                        <div id="drawWinningTileDoubleBox" class="checkbox"></div>
+                        <span>Draw the winning tile from the wall (x2)</span>
+                    </div>
+                </div>
+                
+                <!-- Score Summary -->
+                <h2 id="pointsRecapTitle" class="section-title">3. Direct Points Recap</h2>
+                
+                <div class="score-summary">
+                    <div class="score-row">
+                        <span>Base Score:</span>
+                        <span id="baseScoreValue">0 points</span>
+                    </div>
+                    
+                    <div id="doublesRow" class="score-row" style="display: none;">
+                        <span>Doubles Multiplier:</span>
+                        <span id="doublesValue">x1</span>
+                    </div>
+                    
+                    <div class="score-row">
+                        <span>Total before rounding:</span>
+                        <span id="totalBeforeRoundingValue">0 points</span>
+                    </div>
+                    
+                    <div class="score-row total">
+                        <span>Rounded Score:</span>
+                        <span id="roundedScoreValue">0</span>
+                    </div>
+                    
+                    <div class="final-score-display">
+                        <span id="finalScoreDisplay">0 (0)</span>
+                    </div>
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary">NEXT PLAYER</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load game state
+        const gameStateJson = localStorage.getItem('mahjongGameState');
+        
+        // Accordion functionality
+document.getElementById('tileSetsHeader').addEventListener('click', function() {
+    const content = document.getElementById('tileSetsContent');
+    const icon = this.querySelector('.accordion-icon');
+    
+    content.classList.toggle('open');
+    icon.classList.toggle('open');
+});
+
+        // Check if game state exists
+        if (!gameStateJson) {
+            window.location.href = 'player-setup.html';
+        }
+        
+        const gameState = JSON.parse(gameStateJson);
+        let players = gameState.players;
+        const currentRound = gameState.currentRound;
+        
+        // Current player index
+        let currentPlayerIndex = gameState.currentPlayerIndex || 0;
+        let currentPlayer = players[currentPlayerIndex];
+        
+        // Update header
+        document.getElementById('playerHeader').textContent = `${currentPlayer.name} - ${currentPlayer.wind} Hand Details`;
+        document.getElementById('playerStatus').textContent = currentPlayer.isWinner ? 'Winning Player' : 'Non-Winning Player';
+        
+        // Show/hide winner sections
+        if (currentPlayer.isWinner) {
+            document.getElementById('winnerBonus').style.display = 'block';
+            document.getElementById('winnerCheckboxes').style.display = 'block';
+            document.getElementById('doublesSection').style.display = 'block';
+            document.getElementById('pointsRecapTitle').textContent = '3. Direct Points Recap';
+        } else {
+            document.getElementById('pointsRecapTitle').textContent = '2. Direct Points Recap';
+        }
+        
+        // Update progress indicator
+        document.getElementById(`dot${currentPlayerIndex + 1}`).classList.add('active');
+        for (let i = 0; i < currentPlayerIndex; i++) {
+            document.getElementById(`dot${i + 1}`).classList.add('completed');
+        }
+        
+        // Score data for current player
+        const scoreData = {
+            openPungs28: 0,
+            closedPungs28: 0,
+            openPungs19WindDragon: 0,
+            closedPungs19WindDragon: 0,
+            openKongs28: 0,
+            closedKongs28: 0,
+            openKongs19WindDragon: 0,
+            closedKongs19WindDragon: 0,
+            
+            pairDragonsWind: false,
+            pickedEye: false,
+            pickedViableTile: false,
+            drewWinningTile: false,
+            
+            dragonWindSet: false,
+            allSets: false,
+            allRuns: false,
+            oneSuitHonors: false,
+            concealedHand: false,
+            drawWinningTileDouble: false
+        };
+        
+        // Initialize calculated score
+        const calculatedScore = {
+            baseScore: 0,
+            doublesMultiplier: 1,
+            totalBeforeRounding: 0,
+            roundedScore: 0
+        };
+        
+        // Counter functions
+        function incrementCounter(field) {
+            scoreData[field]++;
+            document.getElementById(`${field}Value`).textContent = scoreData[field];
+            calculateScore();
+        }
+        
+        function decrementCounter(field) {
+            if (scoreData[field] > 0) {
+                scoreData[field]--;
+                document.getElementById(`${field}Value`).textContent = scoreData[field];
+                calculateScore();
+            }
+        }
+        
+        // Checkbox handlers
+document.getElementById('pairDragonsWindCheckbox').addEventListener('click', function() {
+    scoreData.pairDragonsWind = !scoreData.pairDragonsWind;
+    document.getElementById('pairDragonsWindBox').classList.toggle('checked', scoreData.pairDragonsWind);
+    calculateScore();
+});
+
+// Winner-only checkboxes
+if (currentPlayer.isWinner) {
+    document.getElementById('pickedEyeCheckbox').addEventListener('click', function() {
+        // If already checked, uncheck it
+        if (scoreData.pickedEye) {
+            scoreData.pickedEye = false;
+            document.getElementById('pickedEyeBox').classList.remove('checked');
+        } else {
+            // Otherwise, uncheck all three options first
+            scoreData.pickedEye = false;
+            scoreData.pickedViableTile = false;
+            scoreData.drewWinningTile = false;
+            document.getElementById('pickedEyeBox').classList.remove('checked');
+            document.getElementById('pickedViableTileBox').classList.remove('checked');
+            document.getElementById('drewWinningTileBox').classList.remove('checked');
+            
+            // Then check only this one
+            scoreData.pickedEye = true;
+            document.getElementById('pickedEyeBox').classList.add('checked');
+        }
+        calculateScore();
+    });
+    
+    document.getElementById('pickedViableTileCheckbox').addEventListener('click', function() {
+        // If already checked, uncheck it
+        if (scoreData.pickedViableTile) {
+            scoreData.pickedViableTile = false;
+            document.getElementById('pickedViableTileBox').classList.remove('checked');
+        } else {
+            // Otherwise, uncheck all three options first
+            scoreData.pickedEye = false;
+            scoreData.pickedViableTile = false;
+            scoreData.drewWinningTile = false;
+            document.getElementById('pickedEyeBox').classList.remove('checked');
+            document.getElementById('pickedViableTileBox').classList.remove('checked');
+            document.getElementById('drewWinningTileBox').classList.remove('checked');
+            
+            // Then check only this one
+            scoreData.pickedViableTile = true;
+            document.getElementById('pickedViableTileBox').classList.add('checked');
+        }
+        calculateScore();
+    });
+    
+    document.getElementById('drewWinningTileCheckbox').addEventListener('click', function() {
+        // If already checked, uncheck it
+        if (scoreData.drewWinningTile) {
+            scoreData.drewWinningTile = false;
+            document.getElementById('drewWinningTileBox').classList.remove('checked');
+        } else {
+            // Otherwise, uncheck all three options first
+            scoreData.pickedEye = false;
+            scoreData.pickedViableTile = false;
+            scoreData.drewWinningTile = false;
+            document.getElementById('pickedEyeBox').classList.remove('checked');
+            document.getElementById('pickedViableTileBox').classList.remove('checked');
+            document.getElementById('drewWinningTileBox').classList.remove('checked');
+            
+            // Then check only this one
+            scoreData.drewWinningTile = true;
+            document.getElementById('drewWinningTileBox').classList.add('checked');
+        }
+        calculateScore();
+    });
+    
+    // Doubles checkboxes
+    document.getElementById('dragonWindSetCheckbox').addEventListener('click', function() {
+        scoreData.dragonWindSet = !scoreData.dragonWindSet;
+        document.getElementById('dragonWindSetBox').classList.toggle('checked', scoreData.dragonWindSet);
+        calculateScore();
+    });
+    
+    document.getElementById('allSetsCheckbox').addEventListener('click', function() {
+        scoreData.allSets = !scoreData.allSets;
+        document.getElementById('allSetsBox').classList.toggle('checked', scoreData.allSets);
+        
+        // Disable incompatible option
+        if (scoreData.allSets) {
+            scoreData.allRuns = false;
+            document.getElementById('allRunsBox').classList.remove('checked');
+            document.getElementById('allRunsCheckbox').style.opacity = '0.5';
+        } else {
+            document.getElementById('allRunsCheckbox').style.opacity = '1';
+        }
+        
+        calculateScore();
+    });
+    
+    document.getElementById('allRunsCheckbox').addEventListener('click', function() {
+        scoreData.allRuns = !scoreData.allRuns;
+        document.getElementById('allRunsBox').classList.toggle('checked', scoreData.allRuns);
+        
+        // Disable incompatible option
+        if (scoreData.allRuns) {
+            scoreData.allSets = false;
+            document.getElementById('allSetsBox').classList.remove('checked');
+            document.getElementById('allSetsCheckbox').style.opacity = '0.5';
+        } else {
+            document.getElementById('allSetsCheckbox').style.opacity = '1';
+        }
+        
+        calculateScore();
+    });
+    
+    document.getElementById('oneSuitHonorsCheckbox').addEventListener('click', function() {
+        scoreData.oneSuitHonors = !scoreData.oneSuitHonors;
+        document.getElementById('oneSuitHonorsBox').classList.toggle('checked', scoreData.oneSuitHonors);
+        calculateScore();
+    });
+    
+    document.getElementById('concealedHandCheckbox').addEventListener('click', function() {
+        scoreData.concealedHand = !scoreData.concealedHand;
+        document.getElementById('concealedHandBox').classList.toggle('checked', scoreData.concealedHand);
+        calculateScore();
+    });
+    
+    document.getElementById('drawWinningTileDoubleCheckbox').addEventListener('click', function() {
+        scoreData.drawWinningTileDouble = !scoreData.drawWinningTileDouble;
+        document.getElementById('drawWinningTileDoubleBox').classList.toggle('checked', scoreData.drawWinningTileDouble);
+        calculateScore();
+    });
+}
+        
+        // Calculate score
+        function calculateScore() {
+            let baseScore = currentPlayer.isWinner ? 30 : 0; // Winners start with 30 points
+            
+            // Calculate points from tile sets
+            baseScore += scoreData.openPungs28 * 2;
+            baseScore += scoreData.closedPungs28 * 4;
+            baseScore += scoreData.openPungs19WindDragon * 4;
+            baseScore += scoreData.closedPungs19WindDragon * 8;
+            baseScore += scoreData.openKongs28 * 8;
+            baseScore += scoreData.closedKongs28 * 16;
+            baseScore += scoreData.openKongs19WindDragon * 16;
+            baseScore += scoreData.closedKongs19WindDragon * 32;
+            
+            // Additional base score points
+            if (scoreData.pairDragonsWind) baseScore += 2;
+            if (currentPlayer.isWinner && scoreData.pickedEye) baseScore += 2;
+            if (currentPlayer.isWinner && scoreData.pickedViableTile) baseScore += 2;
+            if (currentPlayer.isWinner && scoreData.drewWinningTile) baseScore += 2;
+            
+            // Calculate doubles multiplier
+            let doublesMultiplier = 1;
+            if (scoreData.dragonWindSet) doublesMultiplier *= 2;
+            if (currentPlayer.isWinner && scoreData.allSets) doublesMultiplier *= 2;
+            if (currentPlayer.isWinner && scoreData.allRuns) doublesMultiplier *= 2;
+            if (currentPlayer.isWinner && scoreData.oneSuitHonors) doublesMultiplier *= 2;
+            if (currentPlayer.isWinner && scoreData.concealedHand) doublesMultiplier *= 2;
+            if (currentPlayer.isWinner && scoreData.drawWinningTileDouble) doublesMultiplier *= 2;
+            
+            // Calculate total before rounding
+            const totalBeforeRounding = baseScore * doublesMultiplier;
+            
+            // Round up to nearest 10
+            const roundedScore = totalBeforeRounding > 0 
+                ? Math.ceil(totalBeforeRounding / 10) * 10 
+                : 0;
+            
+            // Update calculated score
+            calculatedScore.baseScore = baseScore;
+            calculatedScore.doublesMultiplier = doublesMultiplier;
+            calculatedScore.totalBeforeRounding = totalBeforeRounding;
+            calculatedScore.roundedScore = roundedScore;
+            
+            // Update display
+            document.getElementById('baseScoreValue').textContent = `${baseScore} points`;
+            
+            if (doublesMultiplier > 1) {
+                document.getElementById('doublesRow').style.display = 'flex';
+                document.getElementById('doublesValue').textContent = `x${doublesMultiplier}`;
+            } else {
+                document.getElementById('doublesRow').style.display = 'none';
+            }
+            
+            document.getElementById('totalBeforeRoundingValue').textContent = `${totalBeforeRounding} points`;
+            document.getElementById('roundedScoreValue').textContent = roundedScore;
+            document.getElementById('finalScoreDisplay').textContent = `${roundedScore} (${totalBeforeRounding})`;
+        }
+        
+        // Initialize score display
+        calculateScore();
+        
+        // Handle next player button
+        document.getElementById('nextButton').addEventListener('click', function() {
+            // Save current player's score
+            players[currentPlayerIndex].score = calculatedScore.roundedScore;
+            players[currentPlayerIndex].scoreDetails = {
+                ...scoreData,
+                baseScore: calculatedScore.baseScore,
+                doublesMultiplier: calculatedScore.doublesMultiplier,
+                totalBeforeRounding: calculatedScore.totalBeforeRounding,
+                roundedScore: calculatedScore.roundedScore
+            };
+            
+            // Move to next player or finish if all players are scored
+            if (currentPlayerIndex < players.length - 1) {
+                currentPlayerIndex++;
+                
+                // Update game state with current progress
+                gameState.players = players;
+                gameState.currentPlayerIndex = currentPlayerIndex;
+                localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+                
+                // Reload page to reset the form for next player
+                window.location.reload();
+            } else {
+                // All players scored, calculate payouts and move to results
+                gameState.players = players;
+                calculatePayouts();
+                localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+                window.location.href = 'results.html';
+            }
+        });
+        
+        // Calculate payouts
+        function calculatePayouts() {
+            const winner = players.find(p => p.isWinner);
+            const discarder = players.find(p => p.isDiscarder);
+            const selfDraw = gameState.winInfo?.selfDraw;
+            
+            // Initialize payouts array
+            gameState.payouts = [];
+            
+            // Non-winners pay the winner
+            players.forEach(player => {
+                if (!player.isWinner) {
+                    let amount = winner.score;
+                    
+                    // Double payment if player discarded the winning tile
+                    if (player.isDiscarder) {
+                        amount *= 2;
+                    }
+                    
+                    // Double payment for all if winner self-drew
+                    if (selfDraw) {
+                        amount *= 2;
+                    }
+                    
+                    // Add to payouts
+                    gameState.payouts.push({
+                        from: player.name,
+                        to: winner.name,
+                        amount: amount
+                    });
+                }
+            });
+            
+            // Settling up amongst non-winners
+            const nonWinners = players.filter(p => !p.isWinner);
+            
+            for (let i = 0; i < nonWinners.length; i++) {
+                for (let j = i + 1; j < nonWinners.length; j++) {
+                    const playerA = nonWinners[i];
+                    const playerB = nonWinners[j];
+                    
+                    if (playerA.score !== playerB.score) {
+                        let amount = Math.abs(playerA.score - playerB.score);
+                        const payer = playerA.score < playerB.score ? playerA : playerB;
+                        const receiver = playerA.score < playerB.score ? playerB : playerA;
+                        
+                        // Double if banker is involved
+                        if (payer.isBanker || receiver.isBanker) {
+                            amount *= 2;
+                        }
+                        
+                        // Add to payouts
+                        gameState.payouts.push({
+                            from: payer.name,
+                            to: receiver.name,
+                            amount: amount
+                        });
+                    }
+                }
+            }
+            
+            // Update game history
+            const newHistoryEntry = {
+                round: currentRound.name,
+                hand: currentRound.handNumber,
+                winner: winner.name,
+                score: winner.score,
+                summary: getSummary(winner)
+            };
+            
+            if (!gameState.history) {
+                gameState.history = [];
+            }
+            
+            gameState.history.push(newHistoryEntry);
+            
+            // Update game scores
+            if (!gameState.gameScore) {
+                gameState.gameScore = players.map(player => ({
+                    name: player.name,
+                    score: 0
+                }));
+            }
+            
+            // Calculate net winnings/losses for this hand
+            players.forEach(player => {
+                const payouts = gameState.payouts;
+                let netGain = 0;
+                
+                // Add amounts received
+                payouts.forEach(payout => {
+                    if (payout.to === player.name) {
+                        netGain += payout.amount;
+                    }
+                });
+                
+                // Subtract amounts paid
+                payouts.forEach(payout => {
+                    if (payout.from === player.name) {
+                        netGain -= payout.amount;
+                    }
+                });
+                
+                // Update game score
+                const playerScoreIndex = gameState.gameScore.findIndex(s => s.name === player.name);
+                if (playerScoreIndex >= 0) {
+                    gameState.gameScore[playerScoreIndex].score += netGain;
+                }
+            });
+            
+            // Update banker for next hand based on winner
+            const bankerWon = winner.isBanker;
+            
+            // If banker won, they stay banker; otherwise, rotate to next player
+            if (!bankerWon) {
+                const currentBankerIndex = players.findIndex(p => p.isBanker);
+                const nextBankerIndex = (currentBankerIndex + 1) % players.length;
+                
+                // Store this for the next hand setup
+                gameState.nextBanker = players[nextBankerIndex].name;
+            }
+        }
+        
+        // Get summary of winning hand
+        function getSummary(winner) {
+            const details = winner.scoreDetails;
+            let summary = '';
+            
+            if (details.allSets) summary = 'All Sets';
+            else if (details.allRuns) summary = 'All Runs';
+            else if (details.oneSuitHonors) summary = 'One Suit + Honors';
+            else if (details.concealedHand) summary = 'Concealed Hand';
+            else if (gameState.winInfo.selfDraw) summary = 'Self-Draw';
+            else summary = 'Regular Win';
+            
+            return summary;
+        }
+    </script>
+</body>
+</html>

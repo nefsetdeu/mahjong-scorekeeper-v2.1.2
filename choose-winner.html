@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Winner - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 id="roundHeader" class="app-title">Choose Winner + Round: East (東)</h1>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <!-- Winning player selection -->
+                <div class="form-group">
+                    <label for="winnerSelect" class="form-label">Winning Player</label>
+                    <select id="winnerSelect" class="select-field">
+                        <option value="">Select winner</option>
+                        <!-- Will be filled by JavaScript -->
+                    </select>
+                </div>
+                
+                <!-- Win type selection -->
+                <div class="form-group">
+                    <label class="form-label">Win Type</label>
+                    
+                    <!-- Self-draw checkbox -->
+                    <div id="selfDrawCheckbox" class="checkbox-item">
+                        <div id="selfDrawBox" class="checkbox"></div>
+                        <span>Self-draw (from the wall)</span>
+                    </div>
+                    
+                    <!-- Won on discard checkbox -->
+                    <div id="wonOnDiscardCheckbox" class="checkbox-item">
+                        <div id="wonOnDiscardBox" class="checkbox"></div>
+                        <span>Won on discard</span>
+                    </div>
+                </div>
+                
+                <!-- Discarder selection (conditional) -->
+                <div id="discarderGroup" class="form-group" style="display: none;">
+                    <label for="discarderSelect" class="form-label">Discarder</label>
+                    <select id="discarderSelect" class="select-field">
+                        <option value="">Select discarder</option>
+                        <!-- Will be filled by JavaScript -->
+                    </select>
+                </div>
+                
+                <!-- Win Summary -->
+                <div id="winSummary" class="win-summary" style="display: none;">
+                    <h3 class="summary-title">Win Summary</h3>
+                    <p id="summaryText" class="summary-text"></p>
+                </div>
+                
+                <!-- Error message -->
+                <div id="errorMessage" class="error-message" style="display: none;">
+                    Please complete all required fields.
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary" disabled>NEXT</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load game state
+        const gameStateJson = localStorage.getItem('mahjongGameState');
+        
+        // Check if game state exists
+        if (!gameStateJson) {
+            window.location.href = 'player-setup.html';
+        }
+        
+        const gameState = JSON.parse(gameStateJson);
+        const players = gameState.players;
+        const currentRound = gameState.currentRound;
+        
+        // Reference to elements
+        const roundHeader = document.getElementById('roundHeader');
+        const winnerSelect = document.getElementById('winnerSelect');
+        const selfDrawCheckbox = document.getElementById('selfDrawCheckbox');
+        const selfDrawBox = document.getElementById('selfDrawBox');
+        const wonOnDiscardCheckbox = document.getElementById('wonOnDiscardCheckbox');
+        const wonOnDiscardBox = document.getElementById('wonOnDiscardBox');
+        const discarderGroup = document.getElementById('discarderGroup');
+        const discarderSelect = document.getElementById('discarderSelect');
+        const winSummary = document.getElementById('winSummary');
+        const summaryText = document.getElementById('summaryText');
+        const errorMessage = document.getElementById('errorMessage');
+        const nextButton = document.getElementById('nextButton');
+        
+        // Update round header
+        roundHeader.textContent = `Choose Winner + Round: ${currentRound.name} (${currentRound.chinese})`;
+        
+        // State for form
+        let selectedWinner = '';
+        let isSelfDraw = false;
+        let isWonOnDiscard = false;
+        let selectedDiscarder = '';
+        
+        // Populate winner select
+        players.forEach(player => {
+            const option = document.createElement('option');
+            option.value = player.id;
+            option.textContent = `${player.name} (${player.wind})`;
+            winnerSelect.appendChild(option);
+        });
+        
+        // Handle winner selection
+        winnerSelect.addEventListener('change', function() {
+            selectedWinner = this.value;
+            updateDiscarderOptions();
+            validateForm();
+            updateSummary();
+        });
+        
+        // Handle checkbox clicks
+        selfDrawCheckbox.addEventListener('click', function() {
+            isSelfDraw = !isSelfDraw;
+            
+            if (isSelfDraw) {
+                selfDrawBox.classList.add('checked');
+                isWonOnDiscard = false;
+                wonOnDiscardBox.classList.remove('checked');
+                discarderGroup.style.display = 'none';
+                selectedDiscarder = '';
+            } else {
+                selfDrawBox.classList.remove('checked');
+            }
+            
+            validateForm();
+            updateSummary();
+        });
+        
+        wonOnDiscardCheckbox.addEventListener('click', function() {
+            isWonOnDiscard = !isWonOnDiscard;
+            
+            if (isWonOnDiscard) {
+                wonOnDiscardBox.classList.add('checked');
+                isSelfDraw = false;
+                selfDrawBox.classList.remove('checked');
+                discarderGroup.style.display = 'block';
+            } else {
+                wonOnDiscardBox.classList.remove('checked');
+                discarderGroup.style.display = 'none';
+                selectedDiscarder = '';
+            }
+            
+            validateForm();
+            updateSummary();
+        });
+        
+        // Handle discarder selection
+        discarderSelect.addEventListener('change', function() {
+            selectedDiscarder = this.value;
+            validateForm();
+            updateSummary();
+        });
+        
+        // Update discarder options (exclude the winner)
+        function updateDiscarderOptions() {
+            // Clear existing options
+            discarderSelect.innerHTML = '<option value="">Select discarder</option>';
+            
+            if (!selectedWinner) return;
+            
+            // Add new options (excluding the winner)
+            players.forEach(player => {
+                if (player.id.toString() !== selectedWinner.toString()) {
+                    const option = document.createElement('option');
+                    option.value = player.id;
+                    option.textContent = `${player.name} (${player.wind})`;
+                    discarderSelect.appendChild(option);
+                }
+            });
+        }
+        
+        // Validate form
+        function validateForm() {
+            let isValid = !!selectedWinner;
+            
+            // At least one win type must be selected
+            isValid = isValid && (isSelfDraw || isWonOnDiscard);
+            
+            // If won on discard, a discarder must be selected
+            if (isWonOnDiscard && !selectedDiscarder) {
+                isValid = false;
+            }
+            
+            nextButton.disabled = !isValid;
+            
+            if (!isValid) {
+                nextButton.classList.remove('btn-primary');
+                nextButton.classList.add('btn-secondary');
+                
+                // Show specific error message
+                if (!selectedWinner) {
+                    errorMessage.textContent = 'Please select a winning player.';
+                } else if (!(isSelfDraw || isWonOnDiscard)) {
+                    errorMessage.textContent = 'Please select a win type.';
+                } else if (isWonOnDiscard && !selectedDiscarder) {
+                    errorMessage.textContent = 'Please select who discarded the winning tile.';
+                }
+                
+                errorMessage.style.display = 'block';
+            } else {
+                nextButton.classList.add('btn-primary');
+                nextButton.classList.remove('btn-secondary');
+                errorMessage.style.display = 'none';
+            }
+        }
+        
+        // Update summary
+        function updateSummary() {
+            if (selectedWinner && (isSelfDraw || (isWonOnDiscard && selectedDiscarder))) {
+                const winner = players.find(p => p.id.toString() === selectedWinner.toString());
+                
+                if (isSelfDraw) {
+                    summaryText.textContent = `${winner.name} won by self-draw (picking from the wall)`;
+                } else {
+                    const discarder = players.find(p => p.id.toString() === selectedDiscarder.toString());
+                    summaryText.textContent = `${winner.name} won by discard from ${discarder.name}`;
+                }
+                
+                winSummary.style.display = 'block';
+            } else {
+                winSummary.style.display = 'none';
+            }
+        }
+        
+        // Handle next button
+        nextButton.addEventListener('click', function() {
+            if (nextButton.disabled) return;
+            
+            // Reset player statuses first
+            players.forEach(player => {
+                player.isWinner = false;
+                player.isDiscarder = false;
+            });
+            
+            // Update players with winner/discarder status
+            const winnerIndex = players.findIndex(p => p.id.toString() === selectedWinner.toString());
+            if (winnerIndex >= 0) {
+                players[winnerIndex].isWinner = true;
+            }
+            
+            if (isWonOnDiscard) {
+                const discarderIndex = players.findIndex(p => p.id.toString() === selectedDiscarder.toString());
+                if (discarderIndex >= 0) {
+                    players[discarderIndex].isDiscarder = true;
+                }
+            }
+            
+            // Update game state
+            gameState.players = players;
+            gameState.winInfo = {
+                winnerId: selectedWinner,
+                selfDraw: isSelfDraw,
+                discarderId: isWonOnDiscard ? selectedDiscarder : null
+            };
+            gameState.currentPlayerIndex = 0; // Reset for hand details screens
+            
+            localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+            
+            // Navigate to next screen
+            window.location.href = 'hand-details.html';
+        });
+        
+        // Initial validation
+        validateForm();
+    </script>
+</body>
+</html>

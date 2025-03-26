@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigning Seats - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Assigning Seats</h1>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="instruction-container">
+                    <div class="instruction-step">
+                        <h2 class="step-title">1. Stack wind tiles</h2>
+                        <p class="step-description">
+                            Standing around the table, one player (usually the host) picks one of each wind tile (E,S,W,N), 
+                            mixes them face down on the table, then stacks them in a tower.
+                        </p>
+                    </div>
+                    
+                    <!-- Space for custom image -->
+                    <img src="stacking-tiles.jpg" alt="Wind tiles stacking" class="instruction-image">
+                    
+                    <div class="instruction-step">
+                        <h2 class="step-title">2. Throw the dice</h2>
+                        <p class="step-description">
+                            Based on the number rolled, starting with the host, count around the table going counter-clockwise to determine 
+                            who matches the combined number rolled and will pick first from the top of the tower. The remaining tiles are then picked, 
+                            in counter-clockwise order.
+                        </p>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <h2 class="step-title">3. Players reveal their wind tiles</h2>
+                        <p class="step-description">
+                            The player who picked EAST gets to choose their seat first. This will be their chair for the rest of the game. 
+                            SOUTH will sit to their right, WEST across from East, and NORTH to their left.
+                        </p>
+                    </div>
+                    
+                    <!-- Space for wind tiles image -->
+                    <img src="reveal-wind.jpg" alt="Wind tiles stacking" class="instruction-image">
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary">NEXT STEP</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple navigation to the next screen
+        document.getElementById('nextButton').addEventListener('click', function() {
+            window.location.href = 'starting-banker.html';
+        });
+        
+        // Ensure game state exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('mahjongGameState')) {
+                // If no game state exists, return to player setup
+                window.location.href = 'player-setup.html';
+            }
+        });
+    </script>
+</body>
+</html>

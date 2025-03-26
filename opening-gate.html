@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening the Gate - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Opening the Gate</h1>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="instruction-container">
+                    <p class="step-description">
+                        After determining the Starting Banker, it's time to open the gate to begin drawing tiles.
+                    </p>
+                    
+                    <!-- Space for custom image -->
+                    <img src="open-wall.jpg" alt="Wind tiles stacking" class="instruction-image">
+                    
+                    <div class="instruction-step">
+                        <h3 class="sub-title">Opening Process:</h3>
+                        <ol class="numbered-list">
+                            <li>
+                                The Banker throws the dice again to determine where to "break the wall".
+                            </li>
+                            <li>
+                                Looking at the wall in front of the Banker, and starting from the right-hand side of the stack 
+                                (inner corner), count the number of tile stacks to the left - using the same number shown on the dice.
+                            </li>
+                            <li>
+                                This position is where the Banker will "open the gate" and begin drawing tiles.
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3 class="example-title">Example:</h3>
+                        <p class="example-description">
+                            If the dice shows 5 and 2 (total: 7), the Banker counts 7 stacks from the right end of the wall 
+                            in front of them. This position becomes the starting point for drawing tiles.
+                        </p>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <h3 class="sub-title">For Subsequent Hands:</h3>
+                        <p class="step-description">
+                            The Banker will always be the one to roll the dice and count around the table, then count the number of tiles to the left.
+                        </p>
+                    </div>
+                </div>
+                
+                <button id="nextButton" class="btn btn-primary">NEXT STEP</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple navigation to the next screen
+        document.getElementById('nextButton').addEventListener('click', function() {
+            window.location.href = 'taking-tiles.html';
+        });
+        
+        // Ensure game state exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('mahjongGameState')) {
+                // If no game state exists, return to player setup
+                window.location.href = 'player-setup.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Wind Assignment - Mahjong Scorekeeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Seat Wind Assignment</h1>
+            <p id="roundHeader" class="app-subtitle">Round: East (東)</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div id="windAssignmentsList" class="wind-assignments-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <div class="info-note">
+                    <p id="bankerNote"><strong>Note:</strong> The East wind player is the Banker for Round 1. 
+                    The Banker role may change in later rounds based on gameplay outcomes.</p>
+                </div>
+                
+                <button id="beginButton" class="btn btn-primary">BEGIN ROUND 1</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Mahjong Scorekeeper v2.12</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Load game state
+        const gameStateJson = localStorage.getItem('mahjongGameState');
+        
+        // Check if game state exists
+        if (!gameStateJson) {
+            window.location.href = 'player-setup.html';
+        }
+        
+        const gameState = JSON.parse(gameStateJson);
+        const players = gameState.players;
+        const currentRound = gameState.currentRound;
+        
+        // Reference to elements
+        const windAssignmentsList = document.getElementById('windAssignmentsList');
+        const roundHeader = document.getElementById('roundHeader');
+        const bankerNote = document.getElementById('bankerNote');
+        const beginButton = document.getElementById('beginButton');
+        
+        // Update round header
+        roundHeader.textContent = `Round: ${currentRound.name} (${currentRound.chinese})`;
+        beginButton.textContent = `BEGIN ROUND ${currentRound.handNumber}`;
+        
+        // Find the banker
+        const banker = players.find(player => player.isBanker);
+        
+        // Update banker note
+        if (banker) {
+            bankerNote.innerHTML = `<strong>Note:</strong> The East wind player (${banker.name}) is the Banker for Round ${currentRound.handNumber}. 
+            The Banker role may change in later rounds based on gameplay outcomes.`;
+        }
+        
+        // Chinese characters for winds
+        const windChinese = {
+            'East': '東',
+            'South': '南',
+            'West': '西',
+            'North': '北'
+        };
+        
+        // Display wind assignments
+        players.forEach(player => {
+            const windRow = document.createElement('div');
+            windRow.className = 'wind-assignment-row';
+            
+            // Style based on banker status
+            if (player.isBanker) {
+                windRow.classList.add('banker-row');
+            }
+            
+            windRow.innerHTML = `
+                <div class="player-wind-info">
+                    <div class="wind-icon ${player.isBanker ? 'banker-wind' : ''}">${windChinese[player.wind]}</div>
+                    <span class="player-name">${player.name}</span>
+                </div>
+                <div class="wind-position">
+                    <span>${player.wind}</span>
+                    ${player.isBanker ? '<span class="banker-badge">Banker</span>' : ''}
+                </div>
+            `;
+            
+            windAssignmentsList.appendChild(windRow);
+        });
+        
+        // Handle begin round button
+        beginButton.addEventListener('click', function() {
+            window.location.href = 'choose-winner.html';
+        });
+    </script>
+</body>
+</html>
