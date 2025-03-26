@@ -900,7 +900,7 @@ tr:last-child td {
 }
 
 .mutually-exclusive::before {
-    content: "Choose one:";
+    content: "Unusual circumstance? (only one)";
     display: block;
     margin-bottom: 5px;
     font-size: 14px;
