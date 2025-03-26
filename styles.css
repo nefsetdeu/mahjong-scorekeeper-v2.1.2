@@ -972,8 +972,6 @@ tr:last-child td {
 
 .welcome-image {
     width: 100%; /* Full width on mobile */
-    max-width: 350px; /* Match card width */
-    height: 330px; /* Fixed height */
     object-fit: cover; /* Maintain aspect ratio while filling dimensions */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
