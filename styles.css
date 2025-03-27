@@ -17,52 +17,6 @@ html, body {
     color: #fef9c3;
 }
 
-/* Container */
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* Header */
-.header {
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 1px solid #ca8a04;
-    margin-bottom: 20px;
-    background-color: transparent;
-}
-
-.app-title {
-    color: #eab308;
-    font-size: 24px;
-    margin-bottom: 5px;
-}
-
-.app-subtitle {
-    color: #fde047;
-    font-size: 16px;
-}
-
-/* Main content area */
-.main-content {
-    flex: 1;
-    margin-bottom: 20px;
-}
-
-/* Card component */
-.card {
-    background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid #a16207;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
 /* Wind Indicator Styles - Add to your styles.css file */
 .wind-indicator-container {
     margin-bottom: 20px;
@@ -124,6 +78,7 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .player-avatar.banker {
@@ -248,6 +203,218 @@ html, body {
         height: 34px;
         font-size: 20px;
     }
+}
+
+/* CSS for simplified wind assignment page */
+
+/* Player wind assignment rows */
+.player-wind-assignments {
+    margin-bottom: 20px;
+}
+
+.player-wind-row1 {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: rgba(127, 29, 29, 0.3);
+    border: 1px solid #a16207;
+    border-radius: 4px;
+}
+
+.wind-badge-container {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.player-row-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.player-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: #7f1d1d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    color: #fde047;
+    font-weight: bold;
+}
+
+.player-name {
+    font-size: 16px;
+    color: #fef9c3;
+}
+
+.player-controls {
+    display: flex;
+    align-items: center;
+}
+
+.wind-select-container {
+    margin-left: 10px;
+}
+
+.wind-select {
+    padding: 8px 12px;
+    background-color: #450a0a;
+    border: 1px solid #ca8a04;
+    border-radius: 4px;
+    color: #fef9c3;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.wind-select option {
+    background-color: #450a0a;
+}
+
+.wind-select option:disabled {
+    color: #94a3b8;
+}
+
+/* Wind badges */
+.wind-badge {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.wind-badge.east {
+    background-color: #eab308;
+    color: #450a0a;
+}
+
+.wind-badge.south {
+    background-color: #ca8a04;
+    color: #450a0a;
+}
+
+.wind-badge.west {
+    background-color: #a16207;
+    color: #fef9c3;
+}
+
+.wind-badge.north {
+    background-color: #854d0e;
+    color: #fef9c3;
+}
+
+/* Banker highlight section */
+.banker-highlight-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(127, 29, 29, 0.2);
+    border-radius: 8px;
+    border: 1px dashed #a16207;
+}
+
+/* Animation for banker highlight */
+.highlight-pulse {
+    animation: bankerPulse 0.5s ease infinite alternate;
+}
+
+@keyframes bankerPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(234, 179, 8, 0.7);
+    }
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 20px rgba(234, 179, 8, 0.9);
+    }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+    .player-wind-row {
+        padding: 10px;
+    }
+    
+    .wind-badge-container {
+        width: 30px;
+        margin-right: 10px;
+    }
+    
+    .wind-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+    
+    .player-name {
+        font-size: 14px;
+    }
+    
+    .wind-select {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .player-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+}
+/* Container */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 1px solid #ca8a04;
+    margin-bottom: 20px;
+    background-color: transparent;
+}
+
+.app-title {
+    color: #eab308;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.app-subtitle {
+    color: #fde047;
+    font-size: 16px;
+}
+
+/* Main content area */
+.main-content {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+/* Card component */
+.card {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #a16207;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Form elements */
@@ -1087,7 +1254,7 @@ tr:last-child td {
 }
 
 .mutually-exclusive::before {
-    content: "Unusual circumstance? (only one)";
+    content: "Choose one:";
     display: block;
     margin-bottom: 5px;
     font-size: 14px;
