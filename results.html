@@ -91,6 +91,11 @@
         const history = gameState.history || [];
         const gameScore = gameState.gameScore || [];
         
+        // Initialize playersServedAsBanker if it doesn't exist
+        if (!gameState.playersServedAsBanker) {
+            gameState.playersServedAsBanker = [];
+        }
+        
         // Update round header
         const roundHeader = document.getElementById('roundHeader');
         roundHeader.textContent = `${currentRound.name} Round - Hand ${currentRound.handNumber}`;
@@ -244,28 +249,42 @@
             
             // Update banker based on results
             if (!bankerWon) {
+                // Add current banker to list of players who have served as banker in this round
+                const currentBanker = players.find(p => p.isBanker);
+                if (currentBanker && !gameState.playersServedAsBanker.includes(currentBanker.name)) {
+                    gameState.playersServedAsBanker.push(currentBanker.name);
+                }
+                
                 // Rotate banker
                 const nextBankerName = gameState.nextBanker;
                 players.forEach(player => {
                     player.isBanker = (player.name === nextBankerName);
                 });
                 
-                // Check if we need to change rounds
-                // If we've completed a full round (all players have been banker)
-                const eastWindPlayer = players.find(p => p.wind === 'East');
-                const firstPlayer = players[0];
-                
-                if (eastWindPlayer.name === firstPlayer.name && currentRound.handNumber > 4) {
+                // Check if all players have been banker in this round
+                if (gameState.playersServedAsBanker.length === 4) {
                     // Move to next round
                     const rounds = ['East', 'South', 'West', 'North'];
                     const chineseWinds = ['東', '南', '西', '北'];
                     const currentRoundIndex = rounds.indexOf(currentRound.name);
                     
                     if (currentRoundIndex < rounds.length - 1) {
+                        // Advance to next round
                         currentRound.name = rounds[currentRoundIndex + 1];
                         currentRound.chinese = chineseWinds[currentRoundIndex + 1];
                         currentRound.number++;
                         currentRound.handNumber = 1;
+                        
+                        // Reset the banker tracking for new round
+                        gameState.playersServedAsBanker = [];
+                        
+                        // Add the current banker to the list for the new round
+                        const newBanker = players.find(p => p.isBanker);
+                        if (newBanker) {
+                            gameState.playersServedAsBanker.push(newBanker.name);
+                        }
+                        
+                        console.log("Advancing to next round: " + currentRound.name);
                     } else {
                         // Game complete, all rounds done
                         alert('All rounds complete! Game Over.');
@@ -274,14 +293,14 @@
                         return;
                     }
                 } else {
-                    // Just increment hand number
+                    // Just increment hand number within the current round
                     currentRound.handNumber++;
                 }
                 
-                // Rotate winds for all players if moving to next hand
+                // Rotate winds for all players when moving to next hand
                 rotateWinds();
             } else {
-                // Banker stays the same, just increment hand number
+                // Banker stays the same (because they won), just increment hand number
                 currentRound.handNumber++;
             }
             
@@ -300,25 +319,27 @@
             window.location.href = 'seat-wind-assignment.html';
         });
         
-        // Rotate wind positions
-function rotateWinds() {
-    const winds = ['East', 'South', 'West', 'North'];
-    
-    // Get current wind assignments
-    const windAssignments = {};
-    players.forEach(player => {
-        windAssignments[player.name] = player.wind;
-    });
-    
-    // Rotate winds counter-clockwise (East becomes North, South becomes East, etc.)
-    players.forEach(player => {
-        const currentWindIndex = winds.indexOf(player.wind);
-        // Move 3 positions forward (equivalent to 1 position backward)
-        const nextWindIndex = (currentWindIndex + 3) % winds.length;
-        player.wind = winds[nextWindIndex];
-        player.isBanker = player.wind === 'East';
-    });
-}
+        // Rotate wind positions - CORRECTED: counter-clockwise rotation
+        function rotateWinds() {
+            const winds = ['East', 'South', 'West', 'North'];
+            
+            // Get current wind assignments
+            const windAssignments = {};
+            players.forEach(player => {
+                windAssignments[player.name] = player.wind;
+            });
+            
+            // Rotate winds COUNTER-CLOCKWISE (East becomes North, South becomes East, etc.)
+            players.forEach(player => {
+                const currentWindIndex = winds.indexOf(player.wind);
+                // Move 3 positions forward (equivalent to 1 position backward/counter-clockwise)
+                const nextWindIndex = (currentWindIndex + 3) % winds.length;
+                player.wind = winds[nextWindIndex];
+                player.isBanker = player.wind === 'East';
+            });
+            
+            console.log("Winds rotated counter-clockwise");
+        }
         
         // Handle end game button
         document.getElementById('endGameButton').addEventListener('click', function() {
