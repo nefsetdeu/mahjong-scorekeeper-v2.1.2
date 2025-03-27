@@ -142,7 +142,8 @@
                 gameScore: players.map(player => ({
                     name: player.name,
                     score: 0
-                }))
+                })),
+                playersServedAsBanker: [] // New property to track who has been banker in current round
             };
             
             // Save to localStorage
