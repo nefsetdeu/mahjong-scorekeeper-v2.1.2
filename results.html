@@ -301,23 +301,24 @@
         });
         
         // Rotate wind positions
-        function rotateWinds() {
-            const winds = ['East', 'South', 'West', 'North'];
-            
-            // Get current wind assignments
-            const windAssignments = {};
-            players.forEach(player => {
-                windAssignments[player.name] = player.wind;
-            });
-            
-            // Rotate winds (each player gets the next wind)
-            players.forEach(player => {
-                const currentWindIndex = winds.indexOf(player.wind);
-                const nextWindIndex = (currentWindIndex + 1) % winds.length;
-                player.wind = winds[nextWindIndex];
-                player.isBanker = player.wind === 'East';
-            });
-        }
+function rotateWinds() {
+    const winds = ['East', 'South', 'West', 'North'];
+    
+    // Get current wind assignments
+    const windAssignments = {};
+    players.forEach(player => {
+        windAssignments[player.name] = player.wind;
+    });
+    
+    // Rotate winds counter-clockwise (East becomes North, South becomes East, etc.)
+    players.forEach(player => {
+        const currentWindIndex = winds.indexOf(player.wind);
+        // Move 3 positions forward (equivalent to 1 position backward)
+        const nextWindIndex = (currentWindIndex + 3) % winds.length;
+        player.wind = winds[nextWindIndex];
+        player.isBanker = player.wind === 'East';
+    });
+}
         
         // Handle end game button
         document.getElementById('endGameButton').addEventListener('click', function() {
