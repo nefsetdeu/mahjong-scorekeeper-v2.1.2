@@ -58,7 +58,7 @@
                         <!-- Current round indicator -->
                         <div class="round-indicator">
                             <div class="round-badge" id="current-round">東</div>
-                            <div class="round-name">East Round</div>
+                            <div class="round-name" id="round-name-display">East Round</div>
                         </div>
                     </div>
                     
@@ -95,10 +95,16 @@
         const roundHeader = document.getElementById('roundHeader');
         const bankerNote = document.getElementById('bankerNote');
         const beginButton = document.getElementById('beginButton');
+        const currentRoundBadge = document.getElementById('current-round');
+        const roundNameDisplay = document.getElementById('round-name-display');
         
-        // Update round header
+        // Update round header and display
         roundHeader.textContent = `Round: ${currentRound.name} (${currentRound.chinese})`;
         beginButton.textContent = `BEGIN ROUND ${currentRound.handNumber}`;
+        
+        // Update round indicator
+        currentRoundBadge.textContent = currentRound.chinese;
+        roundNameDisplay.textContent = `${currentRound.name} Round`;
         
         // Find the banker
         const banker = players.find(player => player.isBanker);
@@ -168,10 +174,6 @@
                     document.getElementById(`${position}-player-avatar`).classList.remove('banker');
                 }
             });
-            
-            // Update round indicator
-            document.getElementById('current-round').textContent = currentRound.chinese;
-            document.querySelector('.round-name').textContent = `${currentRound.name} Round`;
         }
         
         function animateWindRotation() {
