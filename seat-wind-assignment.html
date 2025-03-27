@@ -15,13 +15,58 @@
         
         <main class="main-content">
             <div class="card">
-                <div id="windAssignmentsList" class="wind-assignments-list">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-                
-                <div class="info-note">
-                    <p id="bankerNote"><strong>Note:</strong> The East wind player is the Banker for Round 1. 
-                    The Banker role may change in later rounds based on gameplay outcomes.</p>
+                <div class="wind-indicator-container">
+                    <h3 class="subsection-title">Current Wind Positions</h3>
+                    
+                    <div class="wind-indicator-table">
+                        <!-- Table representation with players -->
+                        <div class="table-center"></div>
+                        
+                        <!-- Player positions -->
+                        <div class="table-position top">
+                            <div class="player-indicator">
+                                <div class="player-avatar" id="top-player-avatar">W</div>
+                                <div class="player-name" id="top-player-name">West</div>
+                                <div class="wind-badge west" id="top-player-wind">西</div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-position right">
+                            <div class="player-indicator">
+                                <div class="player-avatar" id="right-player-avatar">S</div>
+                                <div class="player-name" id="right-player-name">South</div>
+                                <div class="wind-badge south" id="right-player-wind">南</div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-position bottom">
+                            <div class="player-indicator">
+                                <div class="player-avatar" id="bottom-player-avatar">E</div>
+                                <div class="player-name" id="bottom-player-name">East</div>
+                                <div class="wind-badge east" id="bottom-player-wind">東</div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-position left">
+                            <div class="player-indicator">
+                                <div class="player-avatar" id="left-player-avatar">N</div>
+                                <div class="player-name" id="left-player-name">North</div>
+                                <div class="wind-badge north" id="left-player-wind">北</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Current round indicator -->
+                        <div class="round-indicator">
+                            <div class="round-badge" id="current-round">東</div>
+                            <div class="round-name">East Round</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Banker note -->
+                    <div class="info-note">
+                        <p id="bankerNote"><strong>Note:</strong> The East wind player is the Banker for this round. 
+                        The Banker role may change based on gameplay outcomes.</p>
+                    </div>
                 </div>
                 
                 <button id="beginButton" class="btn btn-primary">BEGIN ROUND 1</button>
@@ -47,7 +92,6 @@
         const currentRound = gameState.currentRound;
         
         // Reference to elements
-        const windAssignmentsList = document.getElementById('windAssignmentsList');
         const roundHeader = document.getElementById('roundHeader');
         const bankerNote = document.getElementById('bankerNote');
         const beginButton = document.getElementById('beginButton');
@@ -62,7 +106,7 @@
         // Update banker note
         if (banker) {
             bankerNote.innerHTML = `<strong>Note:</strong> The East wind player (${banker.name}) is the Banker for Round ${currentRound.handNumber}. 
-            The Banker role may change in later rounds based on gameplay outcomes.`;
+            The Banker role may change based on gameplay outcomes.`;
         }
         
         // Chinese characters for winds
@@ -73,33 +117,102 @@
             'North': '北'
         };
         
-        // Display wind assignments
-        players.forEach(player => {
-            const windRow = document.createElement('div');
-            windRow.className = 'wind-assignment-row';
+        // Auto-animate wind rotation if we're not on the first hand of the game
+        const isNewGame = currentRound.name === 'East' && currentRound.handNumber === 1 && !gameState.history?.length;
+        let animationComplete = isNewGame; // Skip animation for new game, otherwise wait for animation
+        
+        // Store player positions (these DON'T change)
+        const positions = ['bottom', 'right', 'top', 'left'];
+        
+        // Wind indicator initialization and update function
+        function initializeWindIndicator() {
+            // First update the display with current state
+            updateWindIndicatorDisplay();
             
-            // Style based on banker status
-            if (player.isBanker) {
-                windRow.classList.add('banker-row');
+            // If not a new game, do the automatic wind rotation animation
+            if (!isNewGame) {
+                animateWindRotation();
             }
+        }
+        
+        // Update the visual display based on current game state
+        function updateWindIndicatorDisplay() {
+            // First, assign players to their fixed table positions based on original seats
+            // (players don't physically move, but their winds rotate)
+            const positionedPlayers = [...players].sort((a, b) => a.id - b.id);
             
-            windRow.innerHTML = `
-                <div class="player-wind-info">
-                    <div class="wind-icon ${player.isBanker ? 'banker-wind' : ''}">${windChinese[player.wind]}</div>
-                    <span class="player-name">${player.name}</span>
-                </div>
-                <div class="wind-position">
-                    <span>${player.wind}</span>
-                    ${player.isBanker ? '<span class="banker-badge">Banker</span>' : ''}
-                </div>
-            `;
+            // Map positions to screen locations
+            const positionMap = {
+                0: 'bottom', // Player 1 sits at bottom
+                1: 'right',  // Player 2 sits at right
+                2: 'top',    // Player 3 sits at top
+                3: 'left'    // Player 4 sits at left
+            };
             
-            windAssignmentsList.appendChild(windRow);
-        });
+            // Update each position on the screen
+            positionedPlayers.forEach((player, index) => {
+                const position = positionMap[index];
+                
+                // Update player info
+                document.getElementById(`${position}-player-name`).textContent = player.name;
+                document.getElementById(`${position}-player-avatar`).textContent = player.name.charAt(0);
+                
+                // Update wind badge
+                document.getElementById(`${position}-player-wind`).textContent = windChinese[player.wind];
+                document.getElementById(`${position}-player-wind`).className = `wind-badge ${player.wind.toLowerCase()}`;
+                
+                // Highlight banker
+                if (player.isBanker) {
+                    document.getElementById(`${position}-player-avatar`).classList.add('banker');
+                } else {
+                    document.getElementById(`${position}-player-avatar`).classList.remove('banker');
+                }
+            });
+            
+            // Update round indicator
+            document.getElementById('current-round').textContent = currentRound.chinese;
+            document.querySelector('.round-name').textContent = `${currentRound.name} Round`;
+        }
+        
+        function animateWindRotation() {
+            // Get all wind badges
+            const windElements = [
+                document.getElementById('bottom-player-wind'),
+                document.getElementById('right-player-wind'),
+                document.getElementById('top-player-wind'),
+                document.getElementById('left-player-wind')
+            ];
+            
+            // Add animation class to all wind badges
+            windElements.forEach(el => el.classList.add('rotating'));
+            
+            // Begin button disabled during animation
+            beginButton.disabled = true;
+            
+            // After animation, update the winds
+            setTimeout(() => {
+                // Remove animation class
+                windElements.forEach(el => el.classList.remove('rotating'));
+                
+                // Update begin button
+                beginButton.disabled = false;
+                animationComplete = true;
+                
+                // Update wind indicator with current state
+                updateWindIndicatorDisplay();
+            }, 1500);
+        }
         
         // Handle begin round button
         beginButton.addEventListener('click', function() {
-            window.location.href = 'choose-winner.html';
+            if (animationComplete) {
+                window.location.href = 'choose-winner.html';
+            }
+        });
+        
+        // Initialize the wind indicator when the document loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWindIndicator();
         });
     </script>
 </body>
