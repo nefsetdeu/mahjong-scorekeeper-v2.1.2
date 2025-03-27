@@ -15,8 +15,8 @@
         
         <main class="main-content">
             <div class="card">
-                <div id="playerWindAssignments">
-                    <!-- This will be filled dynamically with JavaScript -->
+                <div id="playerWindAssignments" class="player-wind-assignments">
+                    <!-- Will be filled by JavaScript -->
                 </div>
                 
                 <div class="info-note">
@@ -53,97 +53,182 @@
         const confirmButton = document.getElementById('confirmButton');
         const errorMessage = document.getElementById('errorMessage');
         
-        // Render player inputs
-        players.forEach((player, index) => {
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'player-wind-row';
-            playerDiv.innerHTML = `
-                <div class="player-info">
-                    <div class="player-label">
-                        <div class="player-icon">${index + 1}</div>
-                        <span>${player.name}</span>
-                    </div>
-                </div>
-                <div class="wind-banker-controls">
-                    <div class="banker-selector">
-                        <input type="radio" name="banker" id="banker-${index}" class="banker-radio" data-player-id="${index}">
-                        <label for="banker-${index}" class="banker-label">Banker</label>
-                    </div>
-                    <select id="wind-${index}" class="select-field wind-select" data-player-id="${index}">
-                        <option value="">Select wind</option>
-                        <option value="East">East (東)</option>
-                        <option value="South">South (南)</option>
-                        <option value="West">West (西)</option>
-                        <option value="North">North (北)</option>
-                    </select>
-                </div>
-            `;
-            playerWindAssignments.appendChild(playerDiv);
-        });
+        // Available winds
+        const winds = ['East', 'South', 'West', 'North'];
         
-        // Get all wind selects and banker radios
-        const windSelects = document.querySelectorAll('.wind-select');
-        const bankerRadios = document.querySelectorAll('.banker-radio');
-        
-        // Update available winds when a wind is selected
-        windSelects.forEach(select => {
-            select.addEventListener('change', updateWindOptions);
-        });
-        
-        // When banker is selected, set the wind to East
-        bankerRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    const playerId = this.dataset.playerId;
-                    const windSelect = document.getElementById(`wind-${playerId}`);
-                    windSelect.value = 'East';
-                    updateWindOptions();
-                }
-            });
-        });
-        
-        function updateWindOptions() {
-            const selectedWinds = Array.from(windSelects)
-                .map(select => select.value)
-                .filter(val => val !== '');
+        // Render player wind assignment rows
+        function renderPlayerRows() {
+            playerWindAssignments.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const playerRow = document.createElement('div');
+                playerRow.className = 'player-wind-row1';
                 
-            // Enable all options first
-            windSelects.forEach(select => {
-                Array.from(select.options).forEach(option => {
-                    if (option.value !== '') {
-                        option.disabled = false;
-                    }
-                });
-            });
-            
-            // Then disable selected options on other selects
-            windSelects.forEach(select => {
-                const currentValue = select.value;
-                if (currentValue === '') {
-                    Array.from(select.options).forEach(option => {
-                        if (option.value !== '' && selectedWinds.includes(option.value)) {
-                            option.disabled = true;
+                // Create wind badge placeholder
+                const windBadgeEl = document.createElement('div');
+                windBadgeEl.className = 'wind-badge-container';
+                windBadgeEl.id = `wind-badge-${player.id}`;
+                
+                if (player.wind) {
+                    const windClass = player.wind.toLowerCase();
+                    const windChinese = getChineseWind(player.wind);
+                    windBadgeEl.innerHTML = `<div class="wind-badge ${windClass}">${windChinese}</div>`;
+                    
+                    // Add highlight-pulse animation to the East wind
+                    if (player.wind === 'East') {
+                        const windBadge = windBadgeEl.querySelector('.wind-badge');
+                        if (windBadge) {
+                            windBadge.classList.add('highlight-pulse');
+                            
+                            // Remove animation after a few seconds
+                            setTimeout(() => {
+                                windBadge.classList.remove('highlight-pulse');
+                            }, 3000);
                         }
-                    });
+                    }
                 }
+                
+                // Create player info
+                const playerInfoEl = document.createElement('div');
+                playerInfoEl.className = 'player-row-info';
+                playerInfoEl.innerHTML = `
+                    <div class="player-avatar">${player.name.charAt(0)}</div>
+                    <span class="player-name">${player.name}</span>
+                `;
+                
+                // Create wind select dropdown
+                const windSelectEl = document.createElement('div');
+                windSelectEl.className = 'wind-select-container';
+                
+                const windSelect = document.createElement('select');
+                windSelect.className = 'wind-select';
+                windSelect.id = `wind-select-${player.id}`;
+                windSelect.setAttribute('data-player-id', player.id);
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Wind';
+                windSelect.appendChild(defaultOption);
+                
+                // Add wind options
+                winds.forEach(wind => {
+                    const option = document.createElement('option');
+                    option.value = wind;
+                    option.textContent = `${wind} (${getChineseWind(wind)})`;
+                    
+                    // Check if this wind is already assigned to another player
+                    if (isWindAssigned(wind) && player.wind !== wind) {
+                        option.disabled = true;
+                    }
+                    
+                    // Select player's current wind if set
+                    if (player.wind === wind) {
+                        option.selected = true;
+                    }
+                    
+                    windSelect.appendChild(option);
+                });
+                
+                // Add change event listener
+                windSelect.addEventListener('change', function() {
+                    updatePlayerWind(player.id, this.value);
+                });
+                
+                windSelectEl.appendChild(windSelect);
+                
+                // Wind select container
+                const controlsEl = document.createElement('div');
+                controlsEl.className = 'player-controls';
+                controlsEl.appendChild(windSelectEl);
+                
+                // Assemble the row
+                playerRow.appendChild(windBadgeEl);
+                playerRow.appendChild(playerInfoEl);
+                playerRow.appendChild(controlsEl);
+                
+                // Add to the container
+                playerWindAssignments.appendChild(playerRow);
             });
-            
-            // If East is selected, make that player the banker
-            windSelects.forEach((select, index) => {
-                if (select.value === 'East') {
-                    bankerRadios[index].checked = true;
+        }
+        
+        // Check if a wind is already assigned to any player
+        function isWindAssigned(wind) {
+            return players.some(player => player.wind === wind);
+        }
+        
+        // Update a player's wind assignment
+        function updatePlayerWind(playerId, wind) {
+            // Update player's wind
+            const playerIndex = players.findIndex(p => p.id === playerId);
+            if (playerIndex >= 0) {
+                // Store previous wind
+                const prevWind = players[playerIndex].wind;
+                
+                // Update wind
+                players[playerIndex].wind = wind || null;
+                
+                // Update banker status based on East assignment
+                players[playerIndex].isBanker = (wind === 'East');
+                
+                // Update wind badge
+                updateWindBadge(playerId, wind);
+                
+                // Add highlight animation if East was just assigned
+                if (wind === 'East' && prevWind !== 'East') {
+                    const windBadge = document.querySelector(`#wind-badge-${playerId} .wind-badge`);
+                    if (windBadge) {
+                        windBadge.classList.add('highlight-pulse');
+                        
+                        // Remove animation after a few seconds
+                        setTimeout(() => {
+                            windBadge.classList.remove('highlight-pulse');
+                        }, 3000);
+                    }
                 }
-            });
+            }
             
+            // Re-render to update disabled options
+            renderPlayerRows();
+            
+            // Validate form
             validateForm();
         }
         
+        // Update wind badge display
+        function updateWindBadge(playerId, wind) {
+            const badgeContainer = document.getElementById(`wind-badge-${playerId}`);
+            if (badgeContainer) {
+                if (wind) {
+                    const windClass = wind.toLowerCase();
+                    const windChinese = getChineseWind(wind);
+                    badgeContainer.innerHTML = `<div class="wind-badge ${windClass}">${windChinese}</div>`;
+                } else {
+                    badgeContainer.innerHTML = '';
+                }
+            }
+        }
+        
+        // Get Chinese character for wind
+        function getChineseWind(wind) {
+            switch(wind) {
+                case 'East': return '東';
+                case 'South': return '南';
+                case 'West': return '西';
+                case 'North': return '北';
+                default: return '';
+            }
+        }
+        
+        // Validate form
         function validateForm() {
-            const allWindsSelected = Array.from(windSelects).every(select => select.value !== '');
-            const bankerSelected = Array.from(bankerRadios).some(radio => radio.checked);
-            const eastSelected = Array.from(windSelects).some(select => select.value === 'East');
+            // Check if all players have a wind assigned
+            const allWindsAssigned = players.every(player => player.wind !== null && player.wind !== undefined && player.wind !== '');
             
-            const isValid = allWindsSelected && bankerSelected && eastSelected;
+            // Check if East (banker) is assigned
+            const eastAssigned = players.some(player => player.wind === 'East');
+            
+            const isValid = allWindsAssigned && eastAssigned;
             
             confirmButton.disabled = !isValid;
             errorMessage.style.display = isValid ? 'none' : 'block';
@@ -151,6 +236,13 @@
             if (!isValid) {
                 confirmButton.classList.remove('btn-primary');
                 confirmButton.classList.add('btn-secondary');
+                
+                // Show specific error message
+                if (!allWindsAssigned) {
+                    errorMessage.textContent = 'Please assign a wind to each player.';
+                } else if (!eastAssigned) {
+                    errorMessage.textContent = 'Please assign East wind to one player (banker).';
+                }
             } else {
                 confirmButton.classList.add('btn-primary');
                 confirmButton.classList.remove('btn-secondary');
@@ -161,15 +253,6 @@
         confirmButton.addEventListener('click', function() {
             if (confirmButton.disabled) return;
             
-            // Update player winds and banker status
-            players.forEach((player, index) => {
-                const windSelect = document.getElementById(`wind-${index}`);
-                const bankerRadio = document.getElementById(`banker-${index}`);
-                
-                player.wind = windSelect.value;
-                player.isBanker = bankerRadio.checked;
-            });
-            
             // Update game state
             gameState.players = players;
             localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
@@ -178,7 +261,8 @@
             window.location.href = 'opening-gate.html';
         });
         
-        // Initial validation
+        // Initialize
+        renderPlayerRows();
         validateForm();
     </script>
 </body>
